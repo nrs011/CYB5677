@@ -1,75 +1,70 @@
+<!-- @format -->
 
-<!DOCTYPE html
-  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-   <!--
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset=utf-8">
+    <!--
 This HTML was auto-generated from MATLAB code.
 To make changes, update the MATLAB code and republish this document.
-      --><title>CNN_for_Iris</title><meta name="generator" content="MATLAB 9.8"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2020-04-17"><meta name="DC.source" content="CNN_for_Iris.m"><style type="text/css">
-html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
-
-html { min-height:100%; margin-bottom:1px; }
-html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
-html body td { vertical-align:top; text-align:left; }
-
-h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
-h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
-h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
-
-a { color:#005fce; text-decoration:none; }
-a:hover { color:#005fce; text-decoration:underline; }
-a:visited { color:#004aa0; text-decoration:none; }
-
-p { padding:0px; margin:0px 0px 20px; }
-img { padding:0px; margin:0px 0px 20px; border:none; }
-p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
-
-ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
-ul li { padding:0px; margin:0px 0px 7px 0px; }
-ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
-ul li ol li { list-style:decimal; }
-ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
-ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
-ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
-ol li ol li { list-style-type:lower-alpha; }
-ol li ul { padding-top:7px; }
-ol li ul li { list-style:square; }
-
-.content { font-size:1.2em; line-height:140%; padding: 20px; }
-
-pre, code { font-size:12px; }
-tt { font-size: 1.2em; }
-pre { margin:0px 0px 20px; }
-pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
-pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
-pre.error { color:red; }
-
-@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
-
-span.keyword { color:#0000FF }
-span.comment { color:#228B22 }
-span.string { color:#A020F0 }
-span.untermstring { color:#B20000 }
-span.syscmd { color:#B28C00 }
-span.typesection { color:#A0522D }
-
-.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
-.footer p { margin:0px; }
-.footer a { color:#878787; }
-.footer a:hover { color:#878787; text-decoration:underline; }
-.footer a:visited { color:#878787; }
-
-table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
-table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
-
-
-
-
-
-  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Load train Data</a></li><li><a href="#3">Size of first image in dataset</a></li><li><a href="#4">Load Test Data</a></li><li><a href="#5">Calculate the number of images in each category.</a></li><li><a href="#6">Define Network Architecture</a></li><li><a href="#7">Specify Training Options</a></li><li><a href="#8">Train Network Using Training Data</a></li><li><a href="#9">Classify validation</a></li><li><a href="#10">Compute Accuracy</a></li><li><a href="#11">move diary file</a></li><li><a href="#12"><b>Test one at a time</b></a></li><li><a href="#13">Find the square root of the false matches to determine the subplots</a></li><li><a href="#14">Recalbirating true and false</a></li><li><a href="#15">start plotting mismatches</a></li><li><a href="#16">start plotting sample of correct match</a></li></ul></div><pre class="codeinput"><span class="comment">%   Biometric Systems</span>
-<span class="comment">%   CYS616</span>
-<span class="comment">%   CONVOLUTIONAL NEURAL NETWORK FOR IRIS RECOGNITION</span>
+      -->
+    <title>CNN_for_Iris</title>
+    <meta name="generator" content="MATLAB 9.8" />
+    <link rel="schema.DC" href="http://purl.org/dc/elements/1.1/" />
+    <meta name="DC.date" content="2020-04-17" />
+    <meta name="DC.source" content="CNN_for_Iris.m" />
+    <meta
+      name="description"
+      content="Iris Recognition for Convolution Neural Network"
+    />
+    <meta name="author" content="Nimesh Ryan Silva" />
+    <!-- css files -->
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+  </head>
+  <body>
+    <div class="content">
+      <h2>Contents</h2>
+      <div>
+        <ul>
+          <li><a href="#2">Training data to be loaded</a></li>
+          <li>
+            <a href="#3"
+              >The first picture in the dataset is the following size</a
+            >
+          </li>
+          <li><a href="#4">Testing data to be loaded</a></li>
+          <li>
+            <a href="#5">Calculate how many images are in each group</a>
+          </li>
+          <li><a href="#6">Build a Network Architecture</a></li>
+          <li><a href="#7">Choose the training options</a></li>
+          <li><a href="#8">Using Training Data to Train a Network</a></li>
+          <li><a href="#9">Validation by grouping</a></li>
+          <li><a href="#10">Compute Accuracy</a></li>
+          <li><a href="#11">Adjust the location of the diary file</a></li>
+          <li>
+            <a href="#12"><b>One at a time, put each one to the test.</b></a>
+          </li>
+          <li>
+            <a href="#13"
+              >Determine the subplots by taking the square root of the wrong
+              matches</a
+            >
+          </li>
+          <li>
+            <a href="#14">Recognizing the difference between true and false</a>
+          </li>
+          <li><a href="#15">Begin charting mismatches</a></li>
+          <li>
+            <a href="#16">Begin by plotting a sample of the correct match</a>
+          </li>
+        </ul>
+      </div>
+      <pre
+        class="codeinput"
+      ><span class="comment">%   Biometric Authentication Technologies</span>
+<span class="comment">%   CYB5677</span>
+<span class="comment">%   IRIS RECOGNITION USING A CONVOLUTION NEURAL NETWORK</span>
 clc;    <span class="comment">% Clear the command window.</span>
 close <span class="string">all</span>;  <span class="comment">% Close all figures (except those of imtool.)</span>
 clear;  <span class="comment">% Erase all existing variables. Or clearvars if you want.</span>
@@ -77,7 +72,9 @@ workspace;  <span class="comment">% Make sure the workspace panel is showing.</s
 reset(gpuDevice);  <span class="comment">% Reset GPU memory</span>
 diary <span class="string">Progress.txt</span>
 diary <span class="string">on</span>
-</pre><h2 id="2">Load train Data</h2><pre class="codeinput">categories = {
+</pre>
+      <h2 id="2">Load train Data</h2>
+      <pre class="codeinput">categories = {
 <span class="string">'001'</span>,<span class="string">'002'</span>,<span class="string">'003'</span>,<span class="string">'004'</span>,<span class="string">'005'</span>,<span class="string">'006'</span>,<span class="string">'007'</span>,<span class="string">'008'</span>,<span class="string">'009'</span>,<span class="string">'010'</span>, <span class="keyword">...</span>
 <span class="string">'011'</span>,<span class="string">'012'</span>,<span class="string">'013'</span>,<span class="string">'014'</span>,<span class="string">'015'</span>,<span class="string">'016'</span>,<span class="string">'017'</span>,<span class="string">'018'</span>,<span class="string">'019'</span>,<span class="string">'020'</span>, <span class="keyword">...</span>
 <span class="string">'021'</span>,<span class="string">'022'</span>,<span class="string">'023'</span>,<span class="string">'024'</span>,<span class="string">'025'</span>,<span class="string">'026'</span>,<span class="string">'027'</span>,<span class="string">'028'</span>,<span class="string">'029'</span>,<span class="string">'030'</span>, <span class="keyword">...</span>
@@ -104,12 +101,26 @@ diary <span class="string">on</span>
 
     imdsTrain = imageDatastore(fullfile(pwd,<span class="string">'Dataset/TrainData'</span>, categories),<span class="string">'IncludeSubfolders'</span>,true,<span class="string">'FileExtensions'</span>,<span class="string">'.bmp'</span>,<span class="string">'LabelSource'</span>,<span class="string">'foldernames'</span>);
 num_train = size(imdsTrain.Files,1);
-</pre><h2 id="3">Size of first image in dataset</h2><pre class="codeinput">    img = readimage(imdsTrain,1);
+</pre>
+      <h2 id="3">Size of first image in dataset</h2>
+      <pre class="codeinput">
+    img = readimage(imdsTrain,1);
     [x , y , z] = size(img);
-</pre><h2 id="4">Load Test Data</h2><pre class="codeinput">    imdsValidation = imageDatastore(fullfile(pwd,<span class="string">'Dataset/TestData'</span>, categories),<span class="string">'IncludeSubfolders'</span>,true,<span class="string">'FileExtensions'</span>,<span class="string">'.bmp'</span>,<span class="string">'LabelSource'</span>,<span class="string">'foldernames'</span>);
+</pre
+      >
+      <h2 id="4">Load Test Data</h2>
+      <pre
+        class="codeinput"
+      >    imdsValidation = imageDatastore(fullfile(pwd,<span class="string">'Dataset/TestData'</span>, categories),<span class="string">'IncludeSubfolders'</span>,true,<span class="string">'FileExtensions'</span>,<span class="string">'.bmp'</span>,<span class="string">'LabelSource'</span>,<span class="string">'foldernames'</span>);
 num_test = size(imdsValidation.Files,1);
-</pre><h2 id="5">Calculate the number of images in each category.</h2><pre class="codeinput">    labelCount = countEachLabel(imdsTrain);
-</pre><h2 id="6">Define Network Architecture</h2><pre class="codeinput">    layers = [
+</pre>
+      <h2 id="5">Calculate the number of images in each category.</h2>
+      <pre class="codeinput">
+    labelCount = countEachLabel(imdsTrain);
+</pre
+      >
+      <h2 id="6">Define Network Architecture</h2>
+      <pre class="codeinput">    layers = [
 
     imageInputLayer([x y z]);
 
@@ -141,7 +152,11 @@ num_test = size(imdsValidation.Files,1);
     fullyConnectedLayer(size(categories,2),<span class="string">'BiasLearnRateFactor'</span>,2);
     softmaxLayer
     classificationLayer];
-</pre><h2 id="7">Specify Training Options</h2><pre class="codeinput">    options = trainingOptions(<span class="string">'sgdm'</span>, <span class="keyword">...</span>
+</pre>
+      <h2 id="7">Specify Training Options</h2>
+      <pre
+        class="codeinput"
+      >    options = trainingOptions(<span class="string">'sgdm'</span>, <span class="keyword">...</span>
     <span class="string">'InitialLearnRate'</span>, 0.001, <span class="keyword">...</span>
     <span class="string">'ValidationData'</span>,imdsValidation, <span class="keyword">...</span>
     <span class="string">'ValidationFrequency'</span>,100, <span class="keyword">...</span>
@@ -153,10 +168,16 @@ num_test = size(imdsValidation.Files,1);
     <span class="string">'LearnRateDropPeriod'</span>,50, <span class="keyword">...</span>
     <span class="string">'ExecutionEnvironment'</span>,<span class="string">'gpu'</span>, <span class="keyword">...</span>
     <span class="string">'Verbose'</span>, true, <span class="string">'VerboseFrequency'</span>, 10);
-</pre><h2 id="8">Train Network Using Training Data</h2><pre class="codeinput">    [net_Wael, info] = trainNetwork(imdsTrain,layers,options);
+</pre>
+      <h2 id="8">Train Network Using Training Data</h2>
+      <pre
+        class="codeinput"
+      >    [net_Wael, info] = trainNetwork(imdsTrain,layers,options);
 save(<span class="string">'TrainedNetwork.mat'</span>,<span class="string">'net_Wael'</span>)
 movefile(<span class="string">'TrainedNetwork.mat'</span>,<span class="string">'results'</span>)
-</pre><pre class="codeoutput">Initializing input data normalization.
+</pre>
+      <pre class="codeoutput">
+Initializing input data normalization.
 |======================================================================================================================|
 |  Epoch  |  Iteration  |  Time Elapsed  |  Mini-batch  |  Validation  |  Mini-batch  |  Validation  |  Base Learning  |
 |         |             |   (hh:mm:ss)   |   Accuracy   |   Accuracy   |     Loss     |     Loss     |      Rate       |
@@ -358,15 +379,31 @@ movefile(<span class="string">'TrainedNetwork.mat'</span>,<span class="string">'
 |      10 |        1940 |       00:02:32 |      100.00% |              |       0.0155 |              |          0.0010 |
 |      10 |        1950 |       00:02:35 |      100.00% |       96.41% |       0.0190 |       0.2316 |          0.0010 |
 |======================================================================================================================|
-</pre><h2 id="9">Classify validation</h2><pre class="codeinput">    labels = classify(net_Wael,imdsValidation);
-</pre><h2 id="10">Compute Accuracy</h2><pre class="codeinput">    YValidation = imdsValidation.Labels;
+</pre
+      >
+      <h2 id="9">Classify validation</h2>
+      <pre class="codeinput">
+    labels = classify(net_Wael,imdsValidation);
+</pre
+      >
+      <h2 id="10">Compute Accuracy</h2>
+      <pre class="codeinput">    YValidation = imdsValidation.Labels;
     accuracy02 = sum(labels == YValidation)/numel(YValidation)*100;
     dis=[<span class="string">'The final accuracy rate is: '</span>, num2str(accuracy02,<span class="string">'%2.2f'</span>), <span class="string">'%'</span>];
     disp(dis);
 diary <span class="string">off</span>
-</pre><pre class="codeoutput">The final accuracy rate is: 97.16%
-</pre><h2 id="11">move diary file</h2><pre class="codeinput">movefile(<span class="string">'Progress.txt'</span>,<span class="string">'results'</span>)
-</pre><h2 id="12"><b>Test one at a time</b></h2><pre class="codeinput">true=0;
+</pre>
+      <pre class="codeoutput">
+The final accuracy rate is: 97.16%
+</pre
+      >
+      <h2 id="11">move diary file</h2>
+      <pre
+        class="codeinput"
+      >movefile(<span class="string">'Progress.txt'</span>,<span class="string">'results'</span>)
+</pre>
+      <h2 id="12"><b>Test one at a time</b></h2>
+      <pre class="codeinput">true=0;
 false=0;
     <span class="keyword">for</span> i = 1:size(imdsValidation.Files,1)
             <span class="keyword">if</span> labels(i) == imdsValidation.Labels(i)
@@ -375,15 +412,27 @@ false=0;
                 false=false+1;
             <span class="keyword">end</span>
     <span class="keyword">end</span>
-</pre><h2 id="13">Find the square root of the false matches to determine the subplots</h2><pre class="codeinput">    f0=floor(sqrt(false));
+</pre>
+      <h2 id="13">
+        Find the square root of the false matches to determine the subplots
+      </h2>
+      <pre class="codeinput">    f0=floor(sqrt(false));
     <span class="keyword">if</span> f0 == sqrt(false)
         f1=f0;
     <span class="keyword">else</span>
         f1=f0+1;
     <span class="keyword">end</span>
-</pre><h2 id="14">Recalbirating true and false</h2><pre class="codeinput">    true=0;
+</pre>
+      <h2 id="14">Recalbirating true and false</h2>
+      <pre class="codeinput">
+    true=0;
     false=0;
-</pre><h2 id="15">start plotting mismatches</h2><pre class="codeinput">    falsefig = figure(<span class="string">'Name'</span>,<span class="string">'All Mismatch Pictures'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="string">'Units'</span>, <span class="string">'Normalized'</span>, <span class="string">'OuterPosition'</span>, [0, 0.04, 1, 0.96]);
+</pre
+      >
+      <h2 id="15">start plotting mismatches</h2>
+      <pre
+        class="codeinput"
+      >    falsefig = figure(<span class="string">'Name'</span>,<span class="string">'All Mismatch Pictures'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="string">'Units'</span>, <span class="string">'Normalized'</span>, <span class="string">'OuterPosition'</span>, [0, 0.04, 1, 0.96]);
 
     <span class="keyword">for</span> i = 1:size(imdsValidation.Files,1)
         imf = imread(imdsValidation.Files{i});
@@ -405,7 +454,11 @@ false=0;
     xlabel(<span class="string">'ALL mismatch incidents'</span>);
     saveas(falsefig,<span class="string">'All Mismatches.png'</span>);
     movefile(<span class="string">'All Mismatches.png'</span>,<span class="string">'results'</span>);
-</pre><h2 id="16">start plotting sample of correct match</h2><pre class="codeinput">    truefig = figure(<span class="string">'Name'</span>,<span class="string">'Sample of Correct Match'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="string">'Units'</span>, <span class="string">'Normalized'</span>, <span class="string">'OuterPosition'</span>, [0, 0.04, 1, 0.96]);
+</pre>
+      <h2 id="16">start plotting sample of correct match</h2>
+      <pre
+        class="codeinput"
+      >    truefig = figure(<span class="string">'Name'</span>,<span class="string">'Sample of Correct Match'</span>,<span class="string">'Visible'</span>,<span class="string">'off'</span>,<span class="string">'Units'</span>, <span class="string">'Normalized'</span>, <span class="string">'OuterPosition'</span>, [0, 0.04, 1, 0.96]);
 
     true=0;
     false=0;
@@ -427,11 +480,18 @@ false=0;
         xlabel(<span class="string">'Sample of Correct Incidents'</span>);
         saveas(truefig,<span class="string">'Sample Matches.png'</span>);
         movefile(<span class="string">'Sample Matches.png'</span>,<span class="string">'results'</span>);
-</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2020a</a><br></p></div><!--
+</pre>
+      <p class="footer">
+        <br /><a href="https://www.mathworks.com/products/matlab/"
+          >Published with MATLAB&reg; R2020a</a
+        ><br />
+      </p>
+    </div>
+    <!--
 ##### SOURCE BEGIN #####
-%   Biometric Systems
+%   Biometric Authentication Technologies
 %   CYS616
-%   CONVOLUTIONAL NEURAL NETWORK FOR IRIS RECOGNITION
+%   IRIS RECOGNITION USING A CONVOLUTION NEURAL NETWORK
 clc;    % Clear the command window.
 close all;  % Close all figures (except those of imtool.)
 clear;  % Erase all existing variables. Or clearvars if you want.
@@ -616,4 +676,6 @@ false=0;
 
 
 ##### SOURCE END #####
---></body></html>
+-->
+  </body>
+</html>
